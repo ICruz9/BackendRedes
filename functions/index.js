@@ -20,7 +20,7 @@ app.get('/', (req,res) => {
 app.post('/createUser',async (req,res) => {
     try {
         await db.collection('users')
-        .doc()
+        .doc(req.query.id)
         .create({
             id: req.query.id,
             name: req.query.name,
@@ -77,13 +77,41 @@ app.get('/getAllUsersPerSex',async (req,res)=>{
             sex: doc.data().sex
        }))
        const response = datos.filter(doc => doc.sex === req.body.sex);
-       return res.status(200).json(response);
+       return res.status(200).json(response);return res.status(200).json(response);
         
     } catch (error) {
        console.log(error);
        return res.status(500).send(error);
         
     }
-})
+});
+app.delete('/deleteUser', async (req,res) => {
+    try {
+        const document = db.collection('users').doc(req.query.id)
+        await document.delete();
+        return res.status(200).json({message:"Eliminacion correcta"});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+});
+app.put('/updateUser', async (req,res) => {
+    try {
+        const document = db.collection('users').doc(req.query.id)
+        await document.update({
+            name: req.body.name,
+            lastname: req.body.lastname,
+            user: req.body.user,
+            password: req.body.password,
+            birthday: req.body.birthday,
+            country: req.body.country,
+            sex: req.body.sex
+        });
+        return res.status(200).json({message:"Actualizacion correcta"});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+});
 exports.app = functions.https.onRequest(app);
 
