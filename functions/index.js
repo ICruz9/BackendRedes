@@ -27,7 +27,7 @@ app.post('/createUser',async (req,res) => {
             lastname: req.query.lastname,
             user: req.query.user,
             password: req.query.password,
-            age: req.query.age,
+            birthday: req.query.birthday,
             country: req.query.country,
             sex: req.query.sex
         });
@@ -49,7 +49,7 @@ app.get('/getAllUsers',async (req,res)=>{
             lastname: doc.data().lastname,
             user: doc.data().user,
             password: doc.data().password,
-            age: doc.data().age,
+            birthday: doc.data().birthday,
             country: doc.data().country,
             sex: doc.data().sex
         }))
@@ -72,7 +72,7 @@ app.get('/getAllUsersPerSex',async (req,res)=>{
             lastname: doc.data().lastname,
             user: doc.data().user,
             password: doc.data().password,
-            age: doc.data().age,
+            birthday: doc.data().birthday,
             country: doc.data().country,
             sex: doc.data().sex
        }))
