@@ -3,6 +3,22 @@ const express = require("express")
 const app = express();
 
 
+var cors = require ('cors');
+app.use(cors({
+    origin:['http://localhost:8080','http://localhost:5000/redesf-7ddb2/us-central1/app'],
+    credentials:true
+}));
+
+app.use(function (req, res, next) {
+
+  res.header('Access-Control-Allow-Origin', "http://localhost:8080");
+  res.header('Access-Control-Allow-Headers', true);
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  next();
+});
+
+
 var admin = require("firebase-admin");
 
 var serviceAccount = require("./redesf-7ddb2-firebase-adminsdk-hykak-6dfca69c4f.json");
@@ -16,7 +32,6 @@ const db = admin.firestore();
 app.get('/', (req,res) => {
     return res.status(200).json({message: "Conexion del Servidor Correcta!"})
 });
-
 app.post('/createUser',async (req,res) => {
     try {
         await db.collection('users')
