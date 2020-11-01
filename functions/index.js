@@ -34,17 +34,19 @@ app.get('/', (req,res) => {
 });
 app.post('/createUser',async (req,res) => {
     try {
+        var obj = JSON.parse(req.body);
+        console.log(obj.id);
         await db.collection('users')
-        .doc(req.query.id)
+        .doc(obj.id)
         .create({
-            id: req.query.id,
-            name: req.query.name,
-            lastname: req.query.lastname,
-            user: req.query.user,
-            password: req.query.password,
-            birthday: req.query.birthday,
-            country: req.query.country,
-            sex: req.query.sex
+            id: obj.id,
+            name: obj.name,
+            lastname: obj.lastname,
+            user: obj.user,
+            password: obj.password,
+            birthday: obj.birthday,
+            country: obj.country,
+            sex: obj.sex
         });
     return res.status(200).json({message:"Insercion correcta"});
     } catch (error) {
@@ -76,8 +78,43 @@ app.get('/getAllUsers',async (req,res)=>{
          
      }
 });
-app.get('/getAllUsersPerSex',async (req,res)=>{
+app.post('/signIn',async (req,res)=>{
     try {
+        console.log(req.body);
+        var obj = JSON.parse(req.body);
+        const query = db.collection('users');
+        const querySnapshot = await query.get();
+        const docs = querySnapshot.docs;
+        const datos = docs.map((doc) => ({
+             id: doc.data().id,
+             name: doc.data().name,
+             lastname: doc.data().lastname,
+             user: doc.data().user,
+             password: doc.data().password,
+             birthday: doc.data().birthday,
+             country: doc.data().country,
+             sex: doc.data().sex
+        }))
+        const response = datos.filter(doc => doc.user === obj.user && doc.password === obj.password);
+        console.log(response.length);
+        if (response.length===1) {
+            const resp =  {'signIn':'true'}
+            return res.status(200).json(resp);  
+        }else{
+            const resp =  {'signIn':'false'}
+            return res.status(200).json(resp);
+        }
+       
+        
+    } catch (error) {
+       console.log(error);
+       return res.status(500).send(error);
+        
+    }
+});
+app.post('/getAllUsersPerSex',async (req,res)=>{
+    try {
+       var obj = JSON.parse(req.body);
        const query = db.collection('users');
        const querySnapshot = await query.get();
        const docs = querySnapshot.docs;
@@ -91,9 +128,8 @@ app.get('/getAllUsersPerSex',async (req,res)=>{
             country: doc.data().country,
             sex: doc.data().sex
        }))
-       const response = datos.filter(doc => doc.sex === req.body.sex);
-       return res.status(200).json(response);return res.status(200).json(response);
-        
+       const response = datos.filter(doc => doc.sex === obj.sex);
+       return res.status(200).json(response);
     } catch (error) {
        console.log(error);
        return res.status(500).send(error);
@@ -102,7 +138,8 @@ app.get('/getAllUsersPerSex',async (req,res)=>{
 });
 app.delete('/deleteUser', async (req,res) => {
     try {
-        const document = db.collection('users').doc(req.query.id)
+        var obj = JSON.parse(req.body);
+        const document = db.collection('users').doc(obj.id)
         await document.delete();
         return res.status(200).json({message:"Eliminacion correcta"});
     } catch (error) {
@@ -112,15 +149,16 @@ app.delete('/deleteUser', async (req,res) => {
 });
 app.put('/updateUser', async (req,res) => {
     try {
-        const document = db.collection('users').doc(req.query.id)
+        var obj = JSON.parse(req.body);
+        const document = db.collection('users').doc(obj.id)
         await document.update({
-            name: req.body.name,
-            lastname: req.body.lastname,
-            user: req.body.user,
-            password: req.body.password,
-            birthday: req.body.birthday,
-            country: req.body.country,
-            sex: req.body.sex
+            name: obj.name,
+            lastname:obj.lastname,
+            user: obj.user,
+            password: obj.password,
+            birthday: obj.birthday,
+            country: obj.country,
+            sex: obj.sex
         });
         return res.status(200).json({message:"Actualizacion correcta"});
     } catch (error) {
